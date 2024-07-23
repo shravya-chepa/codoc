@@ -1,8 +1,10 @@
+const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io");
 const mongoose = require("mongoose");
 require('dotenv').config();
 
-const Document = require("./models/document.model.js")
-
+const Document = require("./models/document.model.js");
 
 const encodedPassword = encodeURIComponent(process.env.DB_PWD);
 mongoose
@@ -16,14 +18,16 @@ mongoose
     console.log("connection failed", error);
   });
 
-const io = require("socket.io")(3001, {
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
   cors: {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
 
-const defaultValue = ""
+const defaultValue = "";
 
 io.on("connection", (socket) => {
   socket.on("get-document", async (documentId) => {
@@ -34,18 +38,22 @@ io.on("connection", (socket) => {
       socket.broadcast.to(documentId).emit("receive-changes", delta);
     });
 
-    socket.on("save-document", async data => {
-      await Document.findByIdAndUpdate(documentId, {data})
-    })
+    socket.on("save-document", async (data) => {
+      await Document.findByIdAndUpdate(documentId, { data });
+    });
   });
   console.log("connected");
 });
 
-
 async function findOrCreateDocument(id) {
-    if (id== null) return
+  if (id == null) return;
 
-    const document = await Document.findById(id);
-    if (document) return document;
-    return await Document.create({_id: id, data: defaultValue})
+  const document = await Document.findById(id);
+  if (document) return document;
+  return await Document.create({ _id: id, data: defaultValue });
 }
+
+const PORT = process.env.PORT || 3001;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
