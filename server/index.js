@@ -23,14 +23,14 @@ const app = express();
 const server = http.createServer(app);
 
 app.use(cors({
-  origin: "http://localhost:3000", 
+  origin: ["http://localhost:3000", "https://codoc-chepa.vercel.app" ],
   methods: ['GET', 'POST'],
   credentials: true
 }));
 
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://codoc-chepa.vercel.app"],
     methods: ["GET", "POST"],
     credentials: true
   },
