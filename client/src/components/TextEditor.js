@@ -31,7 +31,7 @@ export default function TextEditor() {
   // console.log("doc id: ", documentId)
 
   useEffect(() => {
-    const s = io("https://codoc-3dgwp1u9x-shravya-chepas-projects.vercel.app/");
+    const s = io("https://codoc-server-chepa.up.railway.app/");
 
     setSocket(s)
 
